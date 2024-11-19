@@ -1,3 +1,9 @@
+"""minitorch: A deep learning framework for creating and training models.
+
+Includes core tools for tensors, operations, optimization, and testing.
+Optimized for speed with CPU and GPU support.
+"""
+
 from .testing import MathTest, MathTestVariable  # type: ignore # noqa: F401,F403
 from .fast_ops import *  # noqa: F401,F403
 from .cuda_ops import *  # noqa: F401,F403
