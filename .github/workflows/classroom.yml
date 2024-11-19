@@ -13,26 +13,38 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-
-      - name: Set up Python 3.12.4
+      
+      - name: Set up Python 3.10
         uses: actions/setup-python@v4
         with:
-          python-version: "3.12.4"
+          python-version: "3.10"
           cache: 'pip'
 
-      - name: Update CUDA package versions
+      - name: Update dependencies versions
         run: |
-          sed -i 's/nvidia-cublas-cu12==12.3.52/nvidia-cublas-cu12==12.3.4.1/' requirements.txt
-          sed -i 's/nvidia-cuda-cupti-cu12==12.3.52/nvidia-cuda-cupti-cu12==12.3.101/' requirements.txt
-          sed -i 's/nvidia-cuda-nvrtc-cu12==12.3.52/nvidia-cuda-nvrtc-cu12==12.3.103/' requirements.txt
-          sed -i 's/nvidia-cuda-runtime-cu12==12.3.52/nvidia-cuda-runtime-cu12==12.3.101/' requirements.txt
-          sed -i 's/nvidia-cufft-cu12==12.3.52/nvidia-cufft-cu12==12.3.100/' requirements.txt
-          sed -i 's/nvidia-curand-cu12==12.3.52/nvidia-curand-cu12==12.3.101/' requirements.txt
-          sed -i 's/nvidia-cusolver-cu12==12.3.52/nvidia-cusolver-cu12==12.3.100/' requirements.txt
-          sed -i 's/nvidia-cusparse-cu12==12.3.52/nvidia-cusparse-cu12==12.3.100/' requirements.txt
-          sed -i 's/nvidia-nccl-cu12==12.3.52/nvidia-nccl-cu12==2.19.3/' requirements.txt
-          sed -i 's/nvidia-nvtx-cu12==12.3.52/nvidia-nvtx-cu12==12.3.101/' requirements.txt
-          cat requirements.txt
+          cat > requirements.txt << EOL
+          colorama==0.4.3
+          cuda-python==12.0.0
+          hypothesis==6.54.0
+          numba==0.56.4
+          numpy==1.23.5
+          nvidia-cublas-cu12==12.3.4.1
+          nvidia-cuda-cupti-cu12==12.3.101
+          nvidia-cuda-nvrtc-cu12==12.3.103
+          nvidia-cuda-runtime-cu12==12.3.101
+          nvidia-cufft-cu12==12.3.100
+          nvidia-curand-cu12==12.3.101
+          nvidia-cusolver-cu12==12.3.100
+          nvidia-cusparse-cu12==12.3.100
+          nvidia-nccl-cu12==2.19.3
+          nvidia-nvtx-cu12==12.3.101
+          pre-commit==2.20.0
+          pytest==7.3.1
+          pytest-env
+          pytest-runner==5.3.1
+          typing_extensions>=4.0.0
+          pyright==1.1.376
+          EOL
 
       - name: Install dependencies
         run: |
