@@ -1,3 +1,5 @@
+"""Implementation of fast tensor operations."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, TypeVar, Any
@@ -33,6 +35,7 @@ def njit(fn: Fn, **kwargs: Any) -> Fn:
     return _njit(inline="always", **kwargs)(fn)  # type: ignore
 
 
+# JIT compile these helper functions for better performance
 to_index = njit(to_index)
 index_to_position = njit(index_to_position)
 broadcast_index = njit(broadcast_index)
@@ -41,11 +44,7 @@ broadcast_index = njit(broadcast_index)
 class FastOps(TensorOps):
     @staticmethod
     def map(fn: Callable[[float], float]) -> MapProto:
-        """Applies an element-wise operation to a tensor.
-
-        Creates a JIT-compiled version of the mapping function for faster execution.
-        Returns a closure that handles the actual tensor operation.
-        """
+        """Creates an optimized map operation."""
         f = tensor_map(njit(fn))
 
         def ret(a: Tensor, out: Optional[Tensor] = None) -> Tensor:
@@ -58,10 +57,7 @@ class FastOps(TensorOps):
 
     @staticmethod
     def zip(fn: Callable[[float, float], float]) -> Callable[[Tensor, Tensor], Tensor]:
-        """Combines two tensors element-wise using the provided function.
-
-        Handles broadcasting and creates an optimized version of the operation.
-        """
+        """Creates an optimized zip operation."""
         f = tensor_zip(njit(fn))
 
         def ret(a: Tensor, b: Tensor) -> Tensor:
@@ -76,10 +72,7 @@ class FastOps(TensorOps):
     def reduce(
         fn: Callable[[float, float], float], start: float = 0.0
     ) -> Callable[[Tensor, int], Tensor]:
-        """Reduces a tensor along a specified dimension using the given function.
-
-        The operation maintains the dimension with size 1 for broadcasting compatibility.
-        """
+        """Creates an optimized reduce operation."""
         f = tensor_reduce(njit(fn))
 
         def ret(a: Tensor, dim: int) -> Tensor:
@@ -94,16 +87,7 @@ class FastOps(TensorOps):
 
     @staticmethod
     def matrix_multiply(a: Tensor, b: Tensor) -> Tensor:
-        """Performs batched matrix multiplication between two tensors.
-
-        Supports broadcasting across batch dimensions and handles both 2D and 3D inputs.
-        The last two dimensions are treated as matrix dimensions, where:
-        - out[n, i, j] = sum_k(a[n, i, k] * b[n, k, j])
-
-        Requirements:
-        - Inner dimensions must match (a.shape[-1] == b.shape[-2])
-        - Batch dimensions must be broadcastable
-        """
+        """Performs efficient batched matrix multiplication."""
         both_2d = 0
         if len(a.shape) == 2:
             a = a.contiguous().view(1, a.shape[0], a.shape[1])
@@ -124,6 +108,8 @@ class FastOps(TensorOps):
         if both_2d:
             out = out.view(out.shape[1], out.shape[2])
         return out
+
+    cuda = False
 
 
 def tensor_map(
@@ -226,22 +212,16 @@ def tensor_reduce(
         a_strides: Strides,
         reduce_dim: int,
     ) -> None:
-        out_index = np.zeros(MAX_DIMS, np.int32)
-        reduce_size = a_shape[reduce_dim]
-
         for i in prange(len(out)):
-            # Per-thread index management
             out_index = np.empty(MAX_DIMS, np.int32)
             local_index = np.empty(MAX_DIMS, np.int32)
-
             to_index(i, out_shape, out_index)
             o = index_to_position(out_index, out_strides)
 
             for j in range(len(out_shape)):
                 local_index[j] = out_index[j]
 
-            # Reduction loop
-            for s in range(reduce_size):
+            for s in range(a_shape[reduce_dim]):
                 local_index[reduce_dim] = s
                 j = index_to_position(local_index, a_strides)
                 out[o] = fn(out[o], a_storage[j])
@@ -302,5 +282,6 @@ def _tensor_matrix_multiply(
                 ] = temp
 
 
+# JIT compile the matrix multiplication function
 tensor_matrix_multiply = njit(_tensor_matrix_multiply, parallel=True)
 assert tensor_matrix_multiply is not None
