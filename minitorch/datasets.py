@@ -1,173 +1,97 @@
-import math
-import random
 from dataclasses import dataclass
-from typing import List, Tuple
-
-
-def make_pts(N: int) -> List[Tuple[float, float]]:
-    """Generate N random points in the unit square.
-
-    Args:
-    ----
-        N (int): Number of points to generate.
-
-    Returns:
-    -------
-        List[Tuple[float, float]]: List of N 2D points.
-
-    """
-    X = []
-    for i in range(N):
-        x_1 = random.random()
-        x_2 = random.random()
-        X.append((x_1, x_2))
-    return X
+from typing import List
+import random
+import math
 
 
 @dataclass
-class Graph:
-    N: int
-    X: List[Tuple[float, float]]
+class Dataset:
+    """A class representing a dataset for binary classification.
+
+    Attributes
+    ----------
+        X (List[List[float]]): List of input features
+        y (List[int]): List of binary labels
+
+    """
+
+    X: List[List[float]]
     y: List[int]
 
 
-def simple(N: int = 50) -> Graph:
-    """Generate a simple dataset.
+def make_pts(N: int) -> List[List[float]]:
+    """Generate N random points in the unit square."""
+    return [[random.random(), random.random()] for _ in range(N)]
 
-    Args:
-    ----
-        N (int): Number of points to generate.
 
-    Returns:
-    -------
-        Graph: A graph with N points.
-
-    """
+def simple(N: int = 50) -> Dataset:
+    """Generate a simple dataset."""
     X = make_pts(N)
-    y = []
-    for x_1, x_2 in X:
-        y1 = 1 if x_1 < 0.5 else 0
-        y.append(y1)
-    return Graph(N, X, y)
+    y = [1 if x[0] < 0.5 else 0 for x in X]
+    return Dataset(X, y)
 
 
-def diag(N: int) -> Graph:
-    """Generate a diagonal dataset.
-
-    Args:
-    ----
-        N (int): Number of points to generate.
-
-    Returns:
-    -------
-        Graph: A graph with N points.
-
-    """
+def diag(N: int = 50) -> Dataset:
+    """Generate a diagonal dataset."""
     X = make_pts(N)
-    y = []
-    for x_1, x_2 in X:
-        y1 = 1 if x_1 + x_2 < 0.5 else 0
-        y.append(y1)
-    return Graph(N, X, y)
+    y = [1 if x[0] + x[1] < 0.5 else 0 for x in X]
+    return Dataset(X, y)
 
 
-def split(N: int = 50) -> Graph:
-    """Generate a split dataset.
-
-    Args:
-    ----
-        N (int): Number of points to generate.
-
-    Returns:
-    -------
-        Graph: A graph with N points.
-
-    """
+def split(N: int = 50) -> Dataset:
+    """Generate a split dataset."""
     X = make_pts(N)
-    y = []
-    for x_1, x_2 in X:
-        y1 = 1 if x_1 < 0.2 or x_1 > 0.8 else 0
-        y.append(y1)
-    return Graph(N, X, y)
+    y = [1 if x[0] < 0.2 or x[0] > 0.8 else 0 for x in X]
+    return Dataset(X, y)
 
 
-def xor(N: int = 50) -> Graph:
-    """Generate an XOR dataset.
-
-    Args:
-    ----
-        N (int): Number of points to generate.
-
-    Returns:
-    -------
-        Graph: A graph with N points.
-
-    """
+def xor(N: int = 50) -> Dataset:
+    """Generate an XOR dataset."""
     X = make_pts(N)
-    y = []
-    for x_1, x_2 in X:
-        y1 = 1 if ((x_1 < 0.5 and x_2 > 0.5) or (x_1 > 0.5 and x_2 < 0.5)) else 0
-        y.append(y1)
-    return Graph(N, X, y)
+    y = [
+        1 if ((x[0] < 0.5 and x[1] > 0.5) or (x[0] > 0.5 and x[1] < 0.5)) else 0
+        for x in X
+    ]
+    return Dataset(X, y)
 
 
-def circle(N: int) -> Graph:
-    """Generate a circle dataset.
-
-    Args:
-    ----
-        N (int): Number of points to generate.
-
-    Returns:
-    -------
-        Graph: A graph with N points.
-
-    """
+def circle(N: int = 50) -> Dataset:
+    """Generate a circle dataset."""
     X = make_pts(N)
-    y = []
-    for x_1, x_2 in X:
-        x1, x2 = (x_1 - 0.5, x_2 - 0.5)
-        y1 = 1 if x1 * x1 + x2 * x2 > 0.1 else 0
-        y.append(y1)
-    return Graph(N, X, y)
+    y = [1 if (x[0] - 0.5) ** 2 + (x[1] - 0.5) ** 2 > 0.1 else 0 for x in X]
+    return Dataset(X, y)
 
 
-def spiral(N: int) -> Graph:
-    """Generate a spiral dataset.
+def spiral(N: int = 50) -> Dataset:
+    """Generate a spiral dataset."""
 
-    Args:
-    ----
-        N (int): Number of points to generate.
-
-    Returns:
-    -------
-        Graph: A graph with N points.
-
-    """
-
-    def x(t: float) -> float:
+    def spiral_x(t: float) -> float:
         return t * math.cos(t) / 20.0
 
-    def y(t: float) -> float:
+    def spiral_y(t: float) -> float:
         return t * math.sin(t) / 20.0
 
-    X = [
-        (x(10.0 * (float(i) / (N // 2))) + 0.5, y(10.0 * (float(i) / (N // 2))) + 0.5)
-        for i in range(5 + 0, 5 + N // 2)
-    ]
-    X = X + [
-        (y(-10.0 * (float(i) / (N // 2))) + 0.5, x(-10.0 * (float(i) / (N // 2))) + 0.5)
-        for i in range(5 + 0, 5 + N // 2)
-    ]
-    y2 = [0] * (N // 2) + [1] * (N // 2)
-    return Graph(N, X, y2)
+    X = []
+    # First spiral
+    for i in range(5, 5 + N // 2):
+        t = 10.0 * (float(i) / (N // 2))
+        X.append([spiral_x(t) + 0.5, spiral_y(t) + 0.5])
+
+    # Second spiral
+    for i in range(5, 5 + N // 2):
+        t = 10.0 * (float(i) / (N // 2))
+        X.append([spiral_y(-t) + 0.5, spiral_x(-t) + 0.5])
+
+    labels = [0] * (N // 2) + [1] * (N // 2)
+    return Dataset(X, labels)
 
 
+# Dictionary mapping dataset names to their generator functions
 datasets = {
-    "Simple": simple,
-    "Split": split,
-    "Xor": xor,
-    "Diag": diag,
-    "Circle": circle,
-    "Spiral": spiral,
+    "simple": simple,
+    "split": split,
+    "xor": xor,
+    "diag": diag,
+    "circle": circle,
+    "spiral": spiral,
 }
