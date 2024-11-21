@@ -31,7 +31,7 @@ class Graph:
     y: List[int]
 
 
-def simple(N: int) -> Graph:
+def simple(N: int = 50) -> Graph:
     """Generate a simple dataset.
 
     Args:
@@ -71,7 +71,7 @@ def diag(N: int) -> Graph:
     return Graph(N, X, y)
 
 
-def split(N: int) -> Graph:
+def split(N: int = 50) -> Graph:
     """Generate a split dataset.
 
     Args:
@@ -91,7 +91,7 @@ def split(N: int) -> Graph:
     return Graph(N, X, y)
 
 
-def xor(N: int) -> Graph:
+def xor(N: int = 50) -> Graph:
     """Generate an XOR dataset.
 
     Args:
@@ -165,9 +165,9 @@ def spiral(N: int) -> Graph:
 
 datasets = {
     "Simple": simple,
-    "Diag": diag,
     "Split": split,
     "Xor": xor,
+    "Diag": diag,
     "Circle": circle,
     "Spiral": spiral,
 }

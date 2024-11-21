@@ -1,10 +1,14 @@
 import random
 import numba
 import minitorch
+from minitorch import datasets
 
 # Import dataset utilities and backend configurations
 datasets = minitorch.datasets
 FastTensorBackend = minitorch.TensorBackend(minitorch.FastOps)
+
+# Initialize GPUBackend as None
+GPUBackend = None
 if numba.cuda.is_available():
     GPUBackend = minitorch.TensorBackend(minitorch.CudaOps)
 
@@ -66,8 +70,11 @@ class Network(minitorch.Module):
         Returns:
             Tensor: Network predictions of shape (batch_size, 1)
         """
-        # TODO: Implement for Task 3.5.
-        raise NotImplementedError("Need to implement for Task 3.5")
+        # Apply ReLU activation after each layer except the last
+        hidden1 = self.layer1.forward(x).relu()
+        hidden2 = self.layer2.forward(hidden1).relu()
+        output = self.layer3.forward(hidden2).sigmoid()
+        return output
 
 
 class Linear(minitorch.Module):
@@ -104,8 +111,10 @@ class Linear(minitorch.Module):
         Returns:
             Tensor: Output tensor of shape (batch_size, out_size)
         """
-        # TODO: Implement for Task 3.5.
-        raise NotImplementedError("Need to implement for Task 3.5")
+        # Compute matrix multiplication between input and weights
+        out = x @ self.weights.value
+        # Add bias term to each output neuron
+        return out + self.bias.value
 
 
 class FastTrain:
@@ -226,17 +235,29 @@ if __name__ == "__main__":
     PTS = args.PTS
 
     # Load specified dataset
+
     if args.DATASET == "xor":
-        data = minitorch.datasets["Xor"](PTS)
+        data = datasets["Xor"](PTS)
     elif args.DATASET == "simple":
-        data = minitorch.datasets["Simple"].simple(PTS)
+        data = datasets["Simple"](PTS)
     elif args.DATASET == "split":
-        data = minitorch.datasets["Split"](PTS)
+        data = datasets["Split"](PTS)
+    elif args.DATASET == "diag":
+        data = datasets["Diag"](PTS)
+    elif args.DATASET == "circle":
+        data = datasets["Circle"](PTS)
+    elif args.DATASET == "spiral":
+        data = datasets["Spiral"](PTS)
 
     HIDDEN = int(args.HIDDEN)
     RATE = args.RATE
 
+    # Check if GPU backend is requested but not available
+    if args.BACKEND == "gpu" and GPUBackend is None:
+        print("GPU backend requested but CUDA is not available. Falling back to CPU backend.")
+        backend = FastTensorBackend
+    else:
+        backend = GPUBackend if args.BACKEND == "gpu" else FastTensorBackend
+
     # Initialize and train the model
-    FastTrain(
-        HIDDEN, backend=FastTensorBackend if args.BACKEND != "gpu" else GPUBackend
-    ).train(data, RATE)
+    FastTrain(HIDDEN, backend=backend).train(data, RATE)
