@@ -37,7 +37,12 @@ def RParam(*shape, backend):
     Returns:
         Parameter: Initialized parameter centered around zero (-0.5 to 0.5)
     """
-    r = minitorch.rand(shape, backend=backend) - 0.5
+    # First create the random tensor
+    r = minitorch.rand(shape, backend=backend)
+    # Create a tensor of 0.5 with the same backend
+    offset = minitorch.zeros(shape, backend=backend) + 0.5
+    # Subtract using the backend's subtraction operation
+    r = r - offset
     return minitorch.Parameter(r)
 
 
@@ -92,13 +97,12 @@ class Linear(minitorch.Module):
     def __init__(self, in_size, out_size, backend):
         super().__init__()
 
-        # Initialize weights with random values
+        # Initialize weights using RParam
         self.weights = RParam(in_size, out_size, backend=backend)
 
-        # Initialize bias with small positive values
-        s = minitorch.zeros((out_size,), backend=backend)
-        s = s + 0.1
-        self.bias = minitorch.Parameter(s)
+        # Initialize bias using RParam
+        self.bias = RParam(out_size, backend=backend)
+        self.bias.value = self.bias.value + 0.1  # Add small positive bias
         self.out_size = out_size
 
     def forward(self, x):
@@ -111,9 +115,11 @@ class Linear(minitorch.Module):
         Returns:
             Tensor: Output tensor of shape (batch_size, out_size)
         """
-        # Compute matrix multiplication between input and weights
+        # Ensure x is using the same backend as weights
+        if hasattr(x, 'backend') and x.backend != self.weights.value.backend:
+            raise ValueError("Input tensor backend doesn't match layer backend")
+
         out = x @ self.weights.value
-        # Add bias term to each output neuron
         return out + self.bias.value
 
 
@@ -235,7 +241,6 @@ if __name__ == "__main__":
     PTS = args.PTS
 
     # Load specified dataset
-
     if args.DATASET == "xor":
         data = datasets["xor"](PTS)
     elif args.DATASET == "simple":
