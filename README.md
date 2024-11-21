@@ -35,7 +35,7 @@ ________________________________________________________________________________
 
 # Module 3 Homework Implementation
 
-# 3.1 & 3.2 Parallel Diagnostics Output
+# 3.1: Parallelization
 ```
 MAP
 
@@ -227,6 +227,10 @@ before the loop is executed and reused inside the loop):
    Allocation:: local_index = np.empty(MAX_DIMS, np.int32)
     - numpy.empty() is used for the allocation.
 None
+```
+
+# 3.2: Matrix Multiplication
+```
 MATRIX MULTIPLY
 
 ================================================================================
@@ -302,3 +306,24 @@ Parallel structure is already optimal.
 --------------------------------------------------------------------------------
 
 ```
+
+# 3.4: CUDA Matrix Multiplication
+Prove to us that these lead to speed-ups on large matrix operations by making a graph comparing them to naive operations:
+
+# 3.5: Training
+
+Train a tensor model and add your results for all datasets to the README. Also record the time per epoch reported by the trainer. (As a reference, our parallel implementation gave a 10x speedup). On a standard Colab GPU setup, aim for you CPU to get below 2 seconds per epoch and GPU to be below 1 second per epoch. (With some cleverness you can do much better.):
+- Simple
+- Diag
+- Split
+- Xor
+- Circle
+- Spiral
+
+Run a bigger model and record the time per epoch reported by the trainer:
+- Simple
+- Diag
+- Split
+- Xor
+- Circle
+- Spiral
