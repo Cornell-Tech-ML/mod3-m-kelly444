@@ -37,8 +37,13 @@ def RParam(*shape, backend):
     Returns:
         Parameter: Initialized parameter centered around zero (-0.5 to 0.5)
     """
-    r = minitorch.rand(shape, backend=backend) - 0.5
-    return minitorch.Parameter(r)
+    r = minitorch.rand(shape, backend=backend)
+    if r is None:
+        # If minitorch.rand() returns None, initialize with small positive values
+        s = minitorch.zeros(shape, backend=backend)
+        s = s + 0.1
+        r = s
+    return minitorch.Parameter(r - 0.5)
 
 
 class Network(minitorch.Module):
@@ -235,7 +240,6 @@ if __name__ == "__main__":
     PTS = args.PTS
 
     # Load specified dataset
-
     if args.DATASET == "xor":
         data = datasets["Xor"](PTS)
     elif args.DATASET == "simple":
