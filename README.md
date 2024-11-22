@@ -45,39 +45,39 @@ Diagnostics output from `python project/parallel_check.py`:
 Results for training a tensor model and recording the time per epoch reported by the trainer + running a bigger model and recording the time per epoch reported by the trainer:
 
 ## Simple
-CPU
-GPU
-Bigger CPU
-Bigger GPU
+* CPU
+* GPU
+* Bigger CPU
+* Bigger GPU
 
 ## Split
-CPU
-GPU
-Bigger CPU
-Bigger GPU
+* CPU
+* GPU
+* Bigger CPU
+* Bigger GPU
 
 ## Xor
-CPU
-GPU
-Bigger CPU
-Bigger GPU
+* CPU
+* GPU
+* Bigger CPU
+* Bigger GPU
 
 ## Diag
-CPU
-GPU
-Bigger CPU
-Bigger GPU
+* CPU
+* GPU
+* Bigger CPU
+* Bigger GPU
 
 ## Circle
-CPU
-GPU
-Bigger CPU
+* CPU
+* GPU
+* Bigger CPU
 Bigger GPU
 
 ## Spiral
-CPU
-GPU
-Bigger CPU
-Bigger GPU
+* CPU
+* GPU
+* Bigger CPU
+* Bigger GPU
 
 
