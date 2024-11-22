@@ -42,7 +42,42 @@ Diagnostics output from `python project/parallel_check.py`:
 # Task 3.3: CUDA Operations
 # Task 3.4: CUDA Matrix Multiplication
 # Task 3.5: Training
+Results for training a tensor model and recording the time per epoch reported by the trainer + running a bigger model and recording the time per epoch reported by the trainer:
 
-Results for training a tensor model and recording the time per epoch reported by the trainer:
+## Simple
+CPU
+GPU
+Bigger CPU
+Bigger GPU
 
-Running a bigger model and recording the time per epoch reported by the trainer:
+## Split
+CPU
+GPU
+Bigger CPU
+Bigger GPU
+
+## Xor
+CPU
+GPU
+Bigger CPU
+Bigger GPU
+
+## Diag
+CPU
+GPU
+Bigger CPU
+Bigger GPU
+
+## Circle
+CPU
+GPU
+Bigger CPU
+Bigger GPU
+
+## Spiral
+CPU
+GPU
+Bigger CPU
+Bigger GPU
+
+
