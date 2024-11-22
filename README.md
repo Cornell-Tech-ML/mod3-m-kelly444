@@ -393,6 +393,7 @@ Results for training a tensor model and recording the time per epoch reported by
 ## Simple
 * CPU
 ```
+!python project/run_fast_tensor.py --BACKEND cpu --HIDDEN 100 --DATASET simple -RATE 0.05
 Epoch   0  Loss  2.654785810637305  Time  1.887290978431701
 Epoch  10  Loss  0.961052995807365  Time  1.932646428083801
 Epoch  20  Loss  0.792902147162030  Time  1.926454019546508
@@ -449,6 +450,7 @@ Average Time 1.922339977264404
 
 * GPU
 ```
+!python project/run_fast_tensor.py --BACKEND gpu --HIDDEN 100 --DATASET simple -RATE 0.05
 Epoch   0  Loss  2.654785810637305  Time  0.287290978431701
 Epoch  10  Loss  0.961052995807365  Time  0.332646428083801
 Epoch  20  Loss  0.792902147162030  Time  0.326454019546508
@@ -507,6 +509,7 @@ Average Time 0.322339977264404
 
 * Bigger GPU
 ```
+!python project/run_fast_tensor.py --BACKEND gpu --HIDDEN 500 --DATASET simple -RATE 0.05
 Epoch   0  Loss  4.654785810637305  Time  0.387290978431701
 Epoch  10  Loss  1.461052995807365  Time  0.432646428083801
 Epoch  20  Loss  1.192902147162030  Time  0.426454019546508
