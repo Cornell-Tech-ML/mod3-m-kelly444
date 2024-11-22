@@ -52,6 +52,7 @@ Results for training a tensor model and recording the time per epoch reported by
 <img src="https://github.com/Cornell-Tech-ML/mod3-m-kelly444/blob/19c5874cea49a3cd1a062d6b14d4e027d8be240f/Screen%20Shot%202024-11-21%20at%206.41.10%20PM.png" width="50%">
 
 * GPU
+<img src="https://github.com/Cornell-Tech-ML/mod3-m-kelly444/blob/8f14fbcfd6affb7689a28164b569213634d0ddf3/Screen%20Shot%202024-11-21%20at%2010.22.36%20PM.png" width="50%">
 * Bigger CPU
 <img src="https://github.com/Cornell-Tech-ML/mod3-m-kelly444/blob/0b36c876316265e18b6d8f31bafb2a7ba7e2a158/Screen%20Shot%202024-11-21%20at%206.48.48%20PM.png" width="50%">
 <img src="https://github.com/Cornell-Tech-ML/mod3-m-kelly444/blob/e83ce92e3be5dcd7c3d5f5819d615c6beaf445ea/Screen%20Shot%202024-11-21%20at%206.50.24%20PM.png" width="50%">
