@@ -53,6 +53,8 @@ Results for training a tensor model and recording the time per epoch reported by
 
 * GPU
 * Bigger CPU
+<img src="https://github.com/Cornell-Tech-ML/mod3-m-kelly444/blob/0b36c876316265e18b6d8f31bafb2a7ba7e2a158/Screen%20Shot%202024-11-21%20at%206.48.48%20PM.png" width="50%">
+
 * Bigger GPU
 
 ## Split
