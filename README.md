@@ -618,6 +618,7 @@ Epoch 490  Loss  0.196784493724172  Time  0.433371275901794
 Epoch 500  Loss  0.030864349372562  Time  0.423223805427551
 Average Time 0.422339977264404
 ```
+
 ## Split
 * CPU
 ```
@@ -818,17 +819,3 @@ Average Time 1.922339977264404
 * GPU
 * Bigger CPU
 * Bigger GPU
-
-## Circle
-* CPU
-* GPU
-* Bigger CPU
-* Bigger GPU
-
-## Spiral
-* CPU
-* GPU
-* Bigger CPU
-* Bigger GPU
-
-
