@@ -41,6 +41,8 @@ Diagnostics output from `python project/parallel_check.py`:
 
 # Task 3.3: CUDA Operations
 # Task 3.4: CUDA Matrix Multiplication
+Proving these lead to speed-ups on large matrix operations by making a graph comparing them to naive operations:
+
 # Task 3.5: Training
 Results for training a tensor model and recording the time per epoch reported by the trainer + running a bigger model and recording the time per epoch reported by the trainer:
 
