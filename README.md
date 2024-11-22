@@ -74,7 +74,7 @@ Results for training a tensor model and recording the time per epoch reported by
 * CPU
 * GPU
 * Bigger CPU
-Bigger GPU
+* Bigger GPU
 
 ## Spiral
 * CPU
