@@ -15,10 +15,8 @@ initial_matrix = np.vstack(
 )
 axis_default = ["i", "k", "j"]
 
-
 def permute(mat, x, y):
     return mat.transpose(x, y)
-
 
 def plot_matrix(x, y, title, w=300, h=500, bg="white"):
     data = [
@@ -30,7 +28,6 @@ def plot_matrix(x, y, title, w=300, h=500, bg="white"):
             marker=dict(color="black", size=50, symbol="square-open"),
         ),
     ]
-
     layout = go.Layout(
         title={"text": title, "x": 0.5, "y": 0.9, "xanchor": "center"},
         font={"family": "Raleway", "size": 40, "color": "black"},
@@ -43,10 +40,8 @@ def plot_matrix(x, y, title, w=300, h=500, bg="white"):
         height=h,
         showlegend=False,
     )
-
     fig = go.Figure(data=data, layout=layout)
     fig.show()
-
 
 def plot_map():
     data = [
@@ -65,7 +60,6 @@ def plot_map():
             marker=dict(color="#69BAC9", size=50, symbol="square"),
         ),
     ]
-
     layout = go.Layout(
         title={"text": "map", "x": 0.5, "y": 0.9, "xanchor": "center"},
         font={"family": "Raleway", "size": 40, "color": "black"},
@@ -78,9 +72,7 @@ def plot_map():
         height=400,
         showlegend=False,
     )
-
     fig = go.Figure(data=data, layout=layout)
-
     fig.add_annotation(
         x=5,
         y=2,
@@ -115,7 +107,6 @@ def plot_map():
     )
     fig.show()
 
-
 def plot_zip():
     data = [
         go.Scatter(
@@ -140,7 +131,6 @@ def plot_zip():
             marker=dict(color="#69BAC9", size=50, symbol="square"),
         ),
     ]
-
     layout = go.Layout(
         title={"text": "zip", "x": 0.5, "y": 0.9, "xanchor": "center"},
         font={"family": "Raleway", "size": 40, "color": "black"},
@@ -153,7 +143,6 @@ def plot_zip():
         height=400,
         showlegend=False,
     )
-
     fig = go.Figure(data=data, layout=layout)
     fig.add_annotation(
         x=8,
@@ -189,7 +178,6 @@ def plot_zip():
     )
     fig.show()
 
-
 def plot_reduce():
     data = [
         go.Scatter(
@@ -207,7 +195,6 @@ def plot_reduce():
             marker=dict(color="#69BAC9", size=50, symbol="square"),
         ),
     ]
-
     layout = go.Layout(
         title={"text": "reduce", "x": 0.5, "y": 0.9, "xanchor": "center"},
         font={"family": "Raleway", "size": 40, "color": "black"},
@@ -220,9 +207,7 @@ def plot_reduce():
         height=400,
         showlegend=False,
     )
-
     fig = go.Figure(data=data, layout=layout)
-
     fig.add_annotation(
         x=2,
         y=1,
@@ -273,11 +258,8 @@ def plot_reduce():
     )
     fig.show()
 
-
 def plot_tensor(x, y, z, active=5):
     fig = go.Figure()
-
-    # Construct tensor coordinates
     def construct_tensor(shape=[x, y, z]):
         coords = []
         for z in list(range(shape[2])):
@@ -285,29 +267,21 @@ def plot_tensor(x, y, z, active=5):
                 for x in list(range(shape[0])):
                     coords.append([x, y, z])
         return np.array(coords) * 1.1
-
     tensor_coords = construct_tensor(shape=[x, y, z])
-
-    # Construct one 3d mesh box
     def add_one_box(ind, xs, ys, zs, name, alpha=1.0):
-        # Build triangles from tensor coordinates
         i = [7, 0, 0, 0, 4, 4, 6, 6, 4, 0, 3, 2]
         j = [3, 4, 1, 2, 5, 6, 5, 2, 0, 1, 6, 3]
         k = [0, 7, 2, 3, 6, 7, 1, 1, 5, 5, 7, 6]
         triangles = np.vstack((i, j, k)).T
-
         vertices = np.vstack([xs, ys, zs]).T
         tri_points = vertices[triangles]
         Xe = []
         Ye = []
         Ze = []
-
         for T in tri_points:
             Xe.extend([T[k % 3][0] for k in range(4)] + [None])
             Ye.extend([T[k % 3][1] for k in range(4)] + [None])
             Ze.extend([T[k % 3][2] for k in range(4)] + [None])
-
-        # Build mesh box from triangles
         if ind == active:
             c = "#69bac9"
         else:
@@ -329,10 +303,7 @@ def plot_tensor(x, y, z, active=5):
                 lightposition=dict(x=0, y=0, z=0),
             )
         )
-
-    # Add boxes to fig
     def box_adder(boxes):
-        # Construct boxes from tensor coordinates
         def construct_whole_box(initXYZ):
             for ind, i in enumerate(initXYZ):
                 if ind == 0:
@@ -369,7 +340,6 @@ def plot_tensor(x, y, z, active=5):
                         i + 1,
                     ]
             return wholeBoxXs, wholeBoxYs, wholeBoxZs
-
         for ind, i in enumerate(boxes):
             add_one_box(
                 ind,
@@ -379,10 +349,8 @@ def plot_tensor(x, y, z, active=5):
                 .replace("[", "(")
                 .replace("]", ")"),
             )
-
     box_adder(tensor_coords)
     return fig
-
 
 def tensor_figure(
     x,
@@ -403,7 +371,6 @@ def tensor_figure(
         xr = [x + 0.2, 0]
         yr = [0, y + 0.2]
         zr = [z + 0.2, 0]
-    # Create and add slider
     if slider:
         steps = []
         for i, val in enumerate(fig.data):
@@ -417,11 +384,9 @@ def tensor_figure(
                     {"title": "Tensor Index: " + val["name"]},
                 ],
             )
-            # Toggle i'th trace
             step["args"][0]["opacity"][i] = 1.0
             step["args"][0]["color"][i] = "#69bac9"
             steps.append(step)
-
         fig.update_layout(
             sliders=[
                 dict(
@@ -433,9 +398,7 @@ def tensor_figure(
                 ),
             ],
         )
-
     camera = dict(up=dict(x=0, y=0, z=1), center=dict(x=0, y=0, z=0), eye=eye)
-
     fig.update_layout(
         title={"text": title, "x": 0.5, "y": 0.9, "xanchor": "center"},
         font={"family": "Raleway", "size": 40, "color": "black"},

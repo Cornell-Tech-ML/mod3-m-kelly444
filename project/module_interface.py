@@ -1,20 +1,16 @@
 import networkx as nx
 import streamlit as st
 from streamlit_ace import st_ace
-
 import minitorch
 
 MyModule = None
 minitorch
 
-
 def render_module_sandbox():
     st.write("## Sandbox for Module Trees")
-
     st.write(
         "Visual debugging checks showing the module tree that your code constructs."
     )
-
     code = st_ace(
         language="python",
         height=300,
@@ -31,7 +27,6 @@ class MyModule(minitorch.Module):
     G = nx.MultiDiGraph()
     G.add_node("base")
     stack = [(out, "base")]
-
     while stack:
         n, name = stack[0]
         stack = stack[1:]
@@ -42,6 +37,5 @@ class MyModule(minitorch.Module):
         for cname, m in n.__dict__["_modules"].items():
             G.add_edge(name, name + "." + cname)
             stack.append((m, name + "." + cname))
-
     G.graph["graph"] = {"rankdir": "TB"}
     st.graphviz_chart(nx.nx_pydot.to_pydot(G).to_string())

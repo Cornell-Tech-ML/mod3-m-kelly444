@@ -1,288 +1,152 @@
-"""Collection of the core mathematical operators used throughout the code base."""
-
 import math
 from typing import Callable, List, Sequence, Union
 
 
 def mul(x: float, y: float) -> float:
-    """Multiply two numbers.
+    """Multiplies two numbers and returns the result.
 
-    Args:
-    ----
-        x: A float.
-        y: A float.
-
-    Returns:
-    -------
-        A float representing the product of x and y.
-
+    Example: mul(2, 3) returns 6.
     """
     return x * y
 
 
 def id(x: float) -> float:
-    """Return the identity of a number.
+    """Returns the number as it is (identity function).
 
-    Args:
-    ----
-        x: A float.
-
-    Returns:
-    -------
-        A float representing the identity of x.
-
+    Example: id(5) returns 5.
     """
     return x
 
 
 def add(x: float, y: float) -> float:
-    """Add two numbers.
+    """Adds two numbers and returns the result.
 
-    Args:
-    ----
-        x: A float.
-        y: A float.
-
-    Returns:
-    -------
-        A float representing the sum of x and y.
-
+    Example: add(2, 3) returns 5.
     """
     return float(x + y)
 
 
 def neg(x: float) -> float:
-    """Negate a number.
+    """Returns the negation (opposite) of the number.
 
-    Args:
-    ----
-        x: A float.
-
-    Returns:
-    -------
-        A float representing the negation of x.
-
+    Example: neg(3) returns -3.
     """
     return -1.0 * x
 
 
 def lt(x: float, y: float) -> float:
-    """Compare two numbers.
+    """Checks if x is less than y. Returns 1.0 if true, otherwise 0.0.
 
-    Args:
-    ----
-        x: A float.
-        y: A float.
-
-    Returns:
-    -------
-        A boolean representing whether x is less than y.
-
+    Example: lt(2, 3) returns 1.0 (because 2 is less than 3).
     """
     return 1.0 if x < y else 0.0
 
 
 def eq(x: float, y: float) -> float:
-    """Compare two numbers.
+    """Checks if x is equal to y. Returns 1.0 if true, otherwise 0.0.
 
-    Args:
-    ----
-        x: A float.
-        y: A float.
-
-    Returns:
-    -------
-        A boolean representing whether x is equal to y.
-
+    Example: eq(2, 2) returns 1.0 (because they are equal).
     """
     return 1.0 if x == y else 0.0
 
 
 def max(x: float, y: float) -> float:
-    """Return the maximum of two numbers.
+    """Returns the larger of the two numbers.
 
-    Args:
-    ----
-        x: A float.
-        y: A float.
-
-    Returns:
-    -------
-        A float representing the maximum of x and y.
-
+    Example: max(2, 3) returns 3.
     """
     return x if x > y else y
 
 
 def is_close(x: float, y: float) -> bool:
-    """Check if two numbers are close.
+    """Checks if two numbers are "close enough" to each other (within 0.01).
 
-    Args:
-    ----
-        x: A float.
-        y: A float.
-
-    Returns:
-    -------
-        A boolean representing whether x and y are close.
-
+    Example: is_close(2.0001, 2.0002) returns True (because the difference is small enough).
     """
     return abs(x - y) < 1e-2
 
 
 def sigmoid(x: float) -> float:
-    """Calculate the sigmoid of a number.
+    """Computes the sigmoid of a number, which is a smooth curve used in machine learning.
 
-    Args:
-    ----
-        x: A float.
-
-    Returns:
-    -------
-        A float representing the sigmoid of x.
-
+    The result will be a value between 0 and 1. Example: sigmoid(0) returns 0.5.
     """
     if x >= 0:
-        return 1.0 / (1.0 + math.exp(-x))
+        return 1.0 / (
+            1.0 + math.exp(-x)
+        )  # Standard sigmoid formula for positive numbers
     else:
-        return math.exp(x) / (1.0 + math.exp(x))
+        return math.exp(x) / (1.0 + math.exp(x))  # Special case for negative numbers
 
 
 def sigmoid_back(x: float) -> float:
-    """Calculate the derivative of the sigmoid function.
+    """Computes the derivative (rate of change) of the sigmoid function.
 
-    Args:
-    ----
-        x: A float.
-
-    Returns:
-    -------
-        A float representing the derivative of the sigmoid function.
-
+    Example: sigmoid_back(0.5) returns 0.25, which is the rate of change of the sigmoid at 0.5.
     """
-    return x * (1 - x)
+    return x * (1 - x)  # The derivative of the sigmoid function
 
 
 def log(x: float) -> float:
-    """Calculate the natural logarithm of a number.
+    """Computes the natural logarithm (log base e) of a number.
 
-    Args:
-    ----
-        x: A float.
-
-    Returns:
-    -------
-        A float representing the natural logarithm of x.
-
+    Example: log(2.718) returns approximately 1.0 (since log(e) = 1).
     """
     return math.log(x)
 
 
 def exp(x: float) -> float:
-    """Calculate the exponential of a number.
+    """Computes the exponential of a number (e raised to the power of x).
 
-    Args:
-    ----
-        x: A float.
-
-    Returns:
-    -------
-        A float representing the exponential of x.
-
+    Example: exp(1) returns 2.718, which is e^1.
     """
     return math.exp(x)
 
 
 def log_back(x: float, d: float) -> float:
-    """Calculate the derivative of the logarithm function.
+    """Computes the derivative of the logarithm function.
 
-    Args:
-    ----
-        x (float): The input value for the logarithm.
-        d (float): The derivative value.
-
-    Returns:
-    -------
-        A float representing the derivative of the logarithm function.
-
+    This is useful for backpropagation in machine learning. Example: log_back(2, 3) returns 1.5.
     """
-    return d * 1.0 / x
+    return d * 1.0 / x  # The derivative of the log function
 
 
 def inv(x: float) -> float:
-    """Calculate the inverse of a number.
+    """Returns the reciprocal (1 divided by x) of the number.
 
-    Args:
-    ----
-        x: A float.
-
-    Returns:
-    -------
-        A float representing the inverse of x.
-
+    Example: inv(2) returns 0.5.
     """
     return 1.0 / x
 
 
 def inv_back(x: float, d: float) -> float:
-    """Calculate the derivative of the inverse function.
+    """Computes the derivative of the inverse function (1/x).
 
-    Args:
-    ----
-        x (float): The input value.
-        d (float): The derivative value.
-
-    Returns:
-    -------
-        float: A float representing the derivative of the inverse function.
-
+    This is useful in backpropagation. Example: inv_back(2, 3) returns -0.75.
     """
-    return -1.0 * d / x**2.0
+    return -1.0 * d / x**2.0  # The derivative of the inverse function
 
 
 def relu(x: float) -> float:
-    """Calculate the rectified linear unit of a number.
+    """Applies the ReLU function, which returns 0 for negative numbers and the number itself for positive ones.
 
-    Args:
-    ----
-        x: A float.
-
-    Returns:
-    -------
-        A float representing the rectified linear unit of x.
-
+    Example: relu(-2) returns 0, relu(2) returns 2.
     """
     return float(x) if x > 0.0 else 0.0
 
 
 def relu_back(x: float, d: float) -> float:
-    """Calculate the derivative of the rectified linear unit function.
+    """Computes the derivative of the ReLU function.
 
-    Args:
-    ----
-        x: A float.
-        d: A float.
-
-    Returns:
-    -------
-        A float representing the derivative of the rectified linear unit function.
-
+    Returns the gradient (rate of change) for backpropagation. Example: relu_back(-2, 3) returns 0.
     """
-    return d * (1.0 if x > 0.0 else 0.0)
+    return d * (1.0 if x > 0.0 else 0.0)  # Derivative of ReLU
 
 
 def map(fn: Callable[[float], float], x: List[float]) -> List[float]:
-    """Apply a function to a list.
+    """Applies a function to each element in a list of numbers.
 
-    Args:
-    ----
-        fn: A function.
-        x: A list of floats.
-
-    Returns:
-    -------
-        A list of floats representing the application of fn to x.
-
+    Example: map(squared, [1, 2, 3]) returns [1, 4, 9] (if squared is the function).
     """
     return [fn(x[i]) for i in range(len(x))]
 
@@ -290,18 +154,9 @@ def map(fn: Callable[[float], float], x: List[float]) -> List[float]:
 def zipWith(
     fn: Callable[[float, float], float], x: List[float], y: List[float]
 ) -> List[float]:
-    """Apply a function to two lists.
+    """Applies a function to corresponding elements from two lists and returns a new list.
 
-    Args:
-    ----
-        fn: A function.
-        x: A list of floats.
-        y: A list of floats.
-
-    Returns:
-    -------
-        A list of floats representing the application of fn to x and y.
-
+    Example: zipWith(add, [1, 2, 3], [4, 5, 6]) returns [5, 7, 9].
     """
     return [fn(x[i], y[i]) for i in range(len(x))]
 
@@ -309,18 +164,9 @@ def zipWith(
 def reduce(
     fn: Callable[[float, float], float], x: List[float], initial: float
 ) -> float:
-    """Reduce a list.
+    """Reduces a list of numbers to a single number by repeatedly applying a function.
 
-    Args:
-    ----
-        fn: A function.
-        x: A list of floats.
-        initial: A float.
-
-    Returns:
-    -------
-        A float representing the reduction of x.
-
+    Example: reduce(add, [1, 2, 3], 0) returns 6 (1 + 2 + 3).
     """
     for i in range(len(x)):
         initial = fn(initial, x[i])
@@ -328,62 +174,33 @@ def reduce(
 
 
 def addLists(x: List[float], y: List[float]) -> List[float]:
-    """Add two lists together.
+    """Adds corresponding elements from two lists of numbers.
 
-    Args:
-    ----
-        x: A list of floats.
-        y: A list of floats.
-
-    Returns:
-    -------
-        A list of floats representing the sum of x and y.
-
+    Example: addLists([1, 2], [3, 4]) returns [4, 6].
     """
     return zipWith(add, x, y)
 
 
 def negList(x: List[float]) -> List[float]:
-    """Negate a list.
+    """Negates all the numbers in a list.
 
-    Args:
-    ----
-        x: A list of floats.
-
-    Returns:
-    -------
-        A list of floats representing the negation of x.
-
+    Example: negList([1, -2, 3]) returns [-1, 2, -3].
     """
     return map(neg, x)
 
 
 def prod(x: Sequence[Union[float, int]]) -> float:
-    """Take the product of a list.
+    """Computes the product of all elements in a sequence (multiplying them together).
 
-    Args:
-    ----
-        x: A list of floats.
-
-    Returns:
-    -------
-        A float representing the product of x.
-
+    Example: prod([2, 3, 4]) returns 24 (2 * 3 * 4).
     """
     float_list: List[float] = [float(item) for item in x]
     return reduce(mul, float_list, 1.0)
 
 
 def sum(x: List[float]) -> float:
-    """Sum a list.
+    """Computes the sum of all elements in a list.
 
-    Args:
-    ----
-        x: A list of floats.
-
-    Returns:
-    -------
-        A float representing the sum of x.
-
+    Example: sum([1, 2, 3]) returns 6.
     """
     return reduce(add, x, 0.0)

@@ -3,228 +3,191 @@ from dataclasses import dataclass
 from typing import Any, Iterable, List, Tuple, Protocol
 
 
-# ## Task 1.1
-# Central Difference calculation
-
-
 def central_difference(f: Any, *vals: Any, arg: int = 0, epsilon: float = 1e-6) -> Any:
-    r"""Approximates the rate of change (derivative) of a function at a specific point.
+    """Computes the numerical derivative of a function at a specific point using the central difference method.
 
-    This function estimates how much `f` is changing with respect to one of its inputs,
-    by slightly adjusting that input and observing how `f` changes.
+    The central difference is a way to approximate the derivative (rate of change) of a function at a point.
+    This method calculates the function values at two points: one slightly before and one slightly after
+    the given point, and then uses the difference between these two values to estimate the derivative.
 
     Args:
     ----
-       f : A function
-           A function that takes several numbers and returns one number.
-       *vals : Numbers
-           The values to plug into the function `f` to see how it changes.
-       arg : int, optional (default=0)
-           Which input to focus on when measuring the rate of change.
-       epsilon : float, optional (default=1e-6)
-           A tiny amount to adjust the selected input to see how it affects the function.
+        f (Any): The function whose derivative is being computed.
+        *vals (Any): The point at which to compute the derivative, represented as a list of values for the function's inputs.
+        arg (int, optional): The index in `vals` where the change will happen for calculating the derivative. Default is 0.
+        epsilon (float, optional): The small value to adjust the input for the central difference method. Default is 1e-6.
 
     Returns:
     -------
-        float
-            The estimated rate of change of `f` at the given point.
+        Any: The estimated derivative of the function at the given point.
 
     """
     vals1 = [v for v in vals]
     vals2 = [v for v in vals]
-    vals1[arg] = vals1[arg] + epsilon
-    vals2[arg] = vals2[arg] - epsilon
+    vals1[arg] = (
+        vals1[arg] + epsilon
+    )  # Increase the value of the chosen argument by a small epsilon
+    vals2[arg] = (
+        vals2[arg] - epsilon
+    )  # Decrease the value of the chosen argument by a small epsilon
+    # Return the difference between the function values divided by 2*epsilon, which approximates the derivative
     return (f(*vals1) - f(*vals2)) / (2.0 * epsilon)
-    # END ASSIGN 1.1
 
 
-variable_count = 1
+variable_count = 1  # This will be used for generating unique IDs for each variable
 
 
 class Variable(Protocol):
+    """A protocol that defines the basic operations of a variable in a computational graph.
+
+    A variable can be a node in a graph that computes values. Variables may depend on other variables,
+    and we want to be able to calculate how changes to the variables affect each other (using derivatives).
+    """
+
     def accumulate_derivative(self, x: Any) -> None:
-        """Add the gradient (rate of change) of this variable to its total.
+        """Adds the derivative (rate of change) of this variable with respect to some value.
 
-        This is used to gather all the gradients during backpropagation.
-
-        Args:
-        ----
-            x : Any
-                The value of the gradient to be added.
-
+        This function will store the derivative of the variable in a way that is useful for backpropagation.
         """
         ...
 
     @property
     def unique_id(self) -> int:
-        """Get a unique identifier for this variable.
+        """Returns a unique identifier for the variable.
 
-        Each variable in the graph has a unique ID to keep track of it.
-
-        Returns
-        -------
-        int
-            The unique ID of this variable.
-
+        Every variable gets a unique ID to distinguish it from other variables.
         """
         ...
 
     def is_leaf(self) -> bool:
-        """Check if this variable is a starting point in the computation.
+        """Checks if this variable is a leaf node in the computational graph.
 
-        A "leaf" is a variable that doesn't depend on any other variables.
-
-        Returns
-        -------
-        bool
-            True if this is a leaf, False if it depends on other variables.
-
+        A leaf variable doesn't depend on any other variables (i.e., it's an input value).
         """
         ...
 
     def is_constant(self) -> bool:
-        """Check if this variable's value is fixed and doesn't change.
-
-        A constant variable doesn't change during the calculations.
-
-        Returns
-        -------
-        bool
-            True if the variable is constant, False otherwise.
-
-        """
+        """Checks if the variable is a constant, meaning its value doesn't change during computation."""
         ...
 
     @property
     def parents(self) -> Iterable["Variable"]:
-        """Get the variables that this variable depends on.
+        """Returns a list of parent variables (i.e., the variables this variable depends on).
 
-        These are the variables that contribute to this variable's value.
-
-        Returns
-        -------
-        Iterable[Variable]
-            A list of variables that are used to calculate this variable.
-
+        This is useful for backpropagation, where we need to know which variables to propagate the derivatives to.
         """
         ...
 
     def chain_rule(self, d: Any) -> Iterable[Tuple["Variable", Any]]:
-        """Calculate how the change in this variable affects its parents.
+        """Applies the chain rule to calculate how a change in this variable will affect its parents.
 
-        This uses the chain rule from calculus to figure out how the rate of change
-        of this variable affects its parent variables.
-
-        Args:
-        ----
-            d : Any
-                The rate of change (derivative) of this variable.
-
-        Returns:
-        -------
-        Iterable[Tuple[Variable, Any]]
-            A list of pairs (parent_variable, derivative) for each parent variable.
-
+        The chain rule is used during backpropagation to calculate the derivatives of variables
+        with respect to the final output.
         """
         ...
 
 
 def topological_sort(variable: Variable) -> Iterable[Variable]:
-    """Create an order of variables so that we process them in the right sequence.
+    """Sorts the variables in a computational graph so that each variable appears after all of its parents.
 
-    This function makes sure we process each variable in the order needed,
-    starting from the final result and going backward to the starting variables.
+    This ensures that we compute the values in the correct order for backpropagation,
+    starting from the outputs and working backward toward the inputs.
 
     Args:
     ----
-        variable : Variable
-            The final variable in the computation (usually the result).
+        variable (Variable): The starting point of the graph (usually the output variable).
 
     Returns:
     -------
-        Iterable[Variable]
-            A list of variables in the correct order to calculate gradients, starting from the end.
+        Iterable[Variable]: A list of variables sorted topologically (in order to compute their derivatives).
 
     """
-    order: List[Variable] = []
-    seen = set()
+    order: List[Variable] = []  # The ordered list of variables we will return
+    seen = set()  # A set of already visited variables to avoid circular dependencies
 
     def visit(var: Variable) -> None:
+        """Helper function to traverse the graph and build the topological order."""
         if var.unique_id in seen or var.is_constant():
-            return
-        if not var.is_leaf():
+            return  # Skip if already seen or constant (constants don't need to be backpropagated)
+        if (
+            not var.is_leaf()
+        ):  # If the variable has parents, we need to visit them first
             for m in var.parents:
                 if not m.is_constant():
-                    visit(m)
-        seen.add(var.unique_id)
-        order.insert(0, var)
+                    visit(m)  # Visit parents recursively
+        seen.add(var.unique_id)  # Mark this variable as visited
+        order.insert(0, var)  # Add this variable to the order (starting from the end)
 
-    visit(variable)
-    return order
+    visit(variable)  # Start the sorting from the given variable
+    return order  # Return the ordered list of variables
 
 
 def backpropagate(variable: Variable, deriv: Any) -> None:
-    """Work backward through the graph to calculate gradients.
+    """Propagates the derivative (rate of change) backward through the computational graph using topological sorting.
 
-    This function starts at the final variable (the result) and uses the chain rule
-    to calculate the gradients of each variable that led to the result.
+    Backpropagation updates the derivatives of all variables based on the chain rule, starting from the output
+    variable and working backwards through its parents.
 
     Args:
     ----
-        variable : Variable
-            The final variable in the computation (the result).
-        deriv : Any
-            The gradient (rate of change) of the final variable to be passed back.
+        variable (Variable): The starting variable where the derivative is known (usually the output).
+        deriv (Any): The derivative (gradient) of the output variable that needs to be propagated backwards.
 
     """
-    queue = topological_sort(variable)
-    derivatives = {}
-    derivatives[variable.unique_id] = deriv
+    queue = topological_sort(variable)  # Get the variables in the correct order
+    derivatives = {
+        variable.unique_id: deriv
+    }  # Store the derivative of the output variable
     for var in queue:
-        deriv = derivatives[var.unique_id]
+        deriv = derivatives[
+            var.unique_id
+        ]  # Get the derivative for the current variable
         if var.is_leaf():
-            var.accumulate_derivative(deriv)
+            var.accumulate_derivative(deriv)  # If it's a leaf, update its derivative
         else:
+            # Apply the chain rule to propagate the derivative to the parents
             for v, d in var.chain_rule(deriv):
                 if v.is_constant():
-                    continue
-                derivatives.setdefault(v.unique_id, 0.0)
-                derivatives[v.unique_id] = derivatives[v.unique_id] + d
+                    continue  # Skip constants since their derivatives are always 0
+                derivatives.setdefault(
+                    v.unique_id, 0.0
+                )  # Ensure the derivative exists for each variable
+                derivatives[v.unique_id] += (
+                    d  # Update the derivative for the parent variable
+                )
 
 
 @dataclass
 class Context:
-    """Stores information needed during the forward pass of a function to later compute gradients."""
+    """Stores additional context information, like whether to compute gradients and any values saved for backward computation.
 
-    no_grad: bool = False
-    saved_values: Tuple[Any, ...] = ()
+    This is used during operations that may involve backpropagation, allowing you to save necessary data
+    for the backward pass (derivative calculation).
+    """
+
+    no_grad: bool = False  # If True, do not compute gradients
+    saved_values: Tuple[
+        Any, ...
+    ] = ()  # Store values that need to be saved for the backward pass
 
     def save_for_backward(self, *values: Any) -> None:
-        """Store values that will be used later to compute gradients.
+        """Saves values that are needed for the backward pass.
 
-        These values are saved during the forward pass, so they can be accessed
-        later during backpropagation.
+        These values might be used to compute gradients in the backward pass. If `no_grad` is True, it won't save anything.
 
         Args:
         ----
-            values : Any
-                The values to be saved for future use.
+            *values (Any): The values to be saved for the backward pass.
 
         """
         if self.no_grad:
-            return
-        self.saved_values = values
+            return  # If gradients are disabled, don't save any values
+        self.saved_values = values  # Save the values for later use
 
     @property
     def saved_tensors(self) -> Tuple[Any, ...]:
-        """Retrieve the saved values from the forward pass.
+        """Returns the saved values for the backward pass.
 
-        These are the values we saved earlier, and will be used in backpropagation.
-
-        Returns
-        -------
-        Tuple[Any, ...]
-            The values saved during the forward pass.
-
+        This is a getter that allows you to retrieve the saved values.
         """
         return self.saved_values

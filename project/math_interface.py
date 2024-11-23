@@ -3,25 +3,21 @@ import networkx as nx
 import plotly.graph_objects as go
 import streamlit as st
 from interface.streamlit_utils import render_function
-
 import minitorch
 from minitorch import MathTest, MathTestVariable
 
 MyModule = None
 minitorch
 
-
 def render_math_sandbox(use_scalar=False, use_tensor=False):
     st.write("## Sandbox for Math Functions")
     st.write("Visualization of the mathematical tests run on the underlying code.")
-
     if use_scalar:
         one, two, red = MathTestVariable._comp_testing()
     else:
         one, two, red = MathTest._comp_testing()
     f_type = st.selectbox("Function Type", ["One Arg", "Two Arg", "Reduce"])
     select = {"One Arg": one, "Two Arg": two, "Reduce": red}
-
     fn = st.selectbox("Function", select[f_type], format_func=lambda a: a[0])
     name, _, scalar = fn
     if f_type == "One Arg":
@@ -39,7 +35,6 @@ def render_math_sandbox(use_scalar=False, use_tensor=False):
         scatter = go.Scatter(mode="lines", x=xs, y=ys)
         fig = go.Figure(scatter)
         st.write(fig)
-
         if use_scalar:
             st.write("Derivative f'(x)")
             if use_tensor:
@@ -63,7 +58,6 @@ def render_math_sandbox(use_scalar=False, use_tensor=False):
             G = graph_builder.GraphBuilder().run(out)
             G.graph["graph"] = {"rankdir": "LR"}
             st.graphviz_chart(nx.nx_pydot.to_pydot(G).to_string())
-
     if f_type == "Two Arg":
         st.write("### " + name)
         render_function(scalar)
@@ -86,16 +80,13 @@ def render_math_sandbox(use_scalar=False, use_tensor=False):
                 ]
         else:
             zs = [[scalar(x, y) for x in xs] for y in ys]
-
         scatter = go.Surface(x=xs, y=ys, z=zs)
-
         fig = go.Figure(scatter)
         st.write(fig)
         if use_scalar:
             a, b = [], []
             for x in xs:
                 oa, ob = [], []
-
                 if use_tensor:
                     for y in ys:
                         x1 = minitorch.tensor([x])
@@ -115,7 +106,6 @@ def render_math_sandbox(use_scalar=False, use_tensor=False):
                 a.append(oa)
                 b.append(ob)
             st.write("Derivative f'_x(x, y)")
-
             scatter = go.Surface(
                 x=[[c[0] for c in a2] for a2 in a],
                 y=[[c[1] for c in a2] for a2 in a],
@@ -136,7 +126,6 @@ def render_math_sandbox(use_scalar=False, use_tensor=False):
         render_function(scalar)
         xs = [((x / 1.0) - 50.0 + 1e-5) for x in range(1, 100)]
         ys = [((x / 1.0) - 50.0 + 1e-5) for x in range(1, 100)]
-
         if use_tensor:
             scatter = go.Surface(
                 x=xs,

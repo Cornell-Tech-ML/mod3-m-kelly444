@@ -1,33 +1,19 @@
 import random
 from typing import Callable, Dict, Iterable, List, Tuple
-
 import pytest
 from hypothesis import given, settings
 from hypothesis.strategies import DataObject, data, integers, lists
-
 import minitorch
 from minitorch import MathTestVariable, Tensor, TensorBackend, grad_check
-
 from .strategies import assert_close, small_floats
 from .tensor_strategies import assert_close_tensor, shaped_tensors, tensors
 
 one_arg, two_arg, red_arg = MathTestVariable._comp_testing()
-
-
-# The tests in this file only run the main mathematical functions.
-# The difference is that they run with different tensor ops backends.
-
 SimpleBackend = minitorch.TensorBackend(minitorch.SimpleOps)
 FastTensorBackend = minitorch.TensorBackend(minitorch.FastOps)
 shared: Dict[str, TensorBackend] = {"fast": FastTensorBackend}
-
-# ## Task 3.1
 backend_tests = [pytest.param("fast", marks=pytest.mark.task3_1)]
-
-# ## Task 3.2
 matmul_tests = [pytest.param("fast", marks=pytest.mark.task3_2)]
-
-# Task 3.3 and 3.4 now use FastOps for M1/M2 Macs
 backend_tests.append(pytest.param("fast", marks=pytest.mark.task3_3))
 matmul_tests.append(pytest.param("fast", marks=pytest.mark.task3_4))
 
@@ -35,7 +21,6 @@ matmul_tests.append(pytest.param("fast", marks=pytest.mark.task3_4))
 @given(lists(small_floats, min_size=1))
 @pytest.mark.parametrize("backend", backend_tests)
 def test_create(backend: str, t1: List[float]) -> None:
-    """Create different tensors."""
     t2 = minitorch.tensor(t1, backend=shared[backend])
     for i in range(len(t1)):
         assert t1[i] == t2[i]
@@ -50,7 +35,6 @@ def test_one_args(
     backend: str,
     data: DataObject,
 ) -> None:
-    """Run forward for all one arg functions above."""
     t1 = data.draw(tensors(backend=shared[backend]))
     name, base_fn, tensor_fn = fn
     t2 = tensor_fn(t1)
@@ -67,7 +51,6 @@ def test_two_args(
     backend: str,
     data: DataObject,
 ) -> None:
-    """Run forward for all two arg functions above."""
     t1, t2 = data.draw(shaped_tensors(2, backend=shared[backend]))
     name, base_fn, tensor_fn = fn
     t3 = tensor_fn(t1, t2)
@@ -83,7 +66,6 @@ def test_one_derivative(
     backend: str,
     data: DataObject,
 ) -> None:
-    """Run backward for all one arg functions above."""
     t1 = data.draw(tensors(backend=shared[backend]))
     name, _, tensor_fn = fn
     grad_check(tensor_fn, t1)
@@ -98,7 +80,6 @@ def test_two_grad(
     backend: str,
     data: DataObject,
 ) -> None:
-    """Run backward for all two arg functions above."""
     t1, t2 = data.draw(shaped_tensors(2, backend=shared[backend]))
     name, _, tensor_fn = fn
     grad_check(tensor_fn, t1, t2)
@@ -113,7 +94,6 @@ def test_reduce(
     backend: str,
     data: DataObject,
 ) -> None:
-    """Run backward for all reduce functions above."""
     t1 = data.draw(tensors(backend=shared[backend]))
     name, _, tensor_fn = fn
     grad_check(tensor_fn, t1)
@@ -212,7 +192,6 @@ def test_mul_practice2() -> None:
 
 @pytest.mark.task3_4
 def test_mul_practice3() -> None:
-    """Small real example"""
     x1 = [[random.random() for i in range(2)] for j in range(2)]
     y1 = [[random.random() for i in range(2)] for j in range(2)]
     z = minitorch.tensor(x1, backend=shared["fast"]) @ minitorch.tensor(
@@ -228,7 +207,6 @@ def test_mul_practice3() -> None:
 
 @pytest.mark.task3_4
 def test_mul_practice4() -> None:
-    """Extend to require 2 blocks"""
     size = 33
     x1 = [[random.random() for i in range(size)] for j in range(size)]
     y1 = [[random.random() for i in range(size)] for j in range(size)]
@@ -245,7 +223,6 @@ def test_mul_practice4() -> None:
 
 @pytest.mark.task3_4
 def test_mul_practice5() -> None:
-    """Extend to require a batch"""
     size = 33
     x1 = [
         [[random.random() for i in range(size)] for j in range(size)] for _ in range(2)
@@ -267,7 +244,6 @@ def test_mul_practice5() -> None:
 
 @pytest.mark.task3_4
 def test_mul_practice6() -> None:
-    """Extend to require a batch"""
     size_a = 45
     size_b = 40
     size_in = 33
@@ -296,12 +272,9 @@ def test_mm2() -> None:
     a = minitorch.rand((2, 3), backend=FastTensorBackend)
     b = minitorch.rand((3, 4), backend=FastTensorBackend)
     c = a @ b
-
     c2 = (a.view(2, 3, 1) * b.view(1, 3, 4)).sum(1).view(2, 4)
-
     for ind in c._tensor.indices():
         assert_close(c[ind], c2[ind])
-
     minitorch.grad_check(lambda a, b: a @ b, a, b)
 
 
@@ -318,7 +291,6 @@ def test_bmm(backend: str, data: DataObject) -> None:
     )
     a = data.draw(tensors(backend=shared[backend], shape=(D, A, B)))
     b = data.draw(tensors(backend=shared[backend], shape=(1, B, C)))
-
     c = a @ b
     c2 = (
         (a.contiguous().view(D, A, B, 1) * b.contiguous().view(1, 1, B, C))
