@@ -1,5 +1,4 @@
 from argparse import ArgumentParser
-
 import streamlit as st
 from interface.streamlit_utils import get_img_tag
 from interface.train import render_train_interface
@@ -14,7 +13,6 @@ parser.add_argument(
 args = parser.parse_args()
 module_num = args.module_num
 hide_function_defs = args.hide_function_defs
-
 st.set_page_config(page_title="interactive minitorch")
 st.sidebar.markdown(
     """
@@ -22,19 +20,16 @@ st.sidebar.markdown(
 """.format(get_img_tag("https://minitorch.github.io/logo-sm.png", width="40")),
     unsafe_allow_html=True,
 )
-
 st.sidebar.markdown(
     """
     [Documentation](https://minitorch.github.io/)
 """
 )
-
 module_selection = st.sidebar.radio(
     "Module",
     ["Module 0", "Module 1", "Module 2", "Module 3", "Module 4"][: module_num + 1],
     index=module_num,
 )
-
 
 PAGES = {}
 
@@ -91,10 +86,8 @@ if module_selection == "Module 2":
     PAGES["Autograd Sandbox"] = lambda: render_show_expression(True)
     PAGES["Module 2: Tensor"] = render_run_tensor_interface
 
-
 if module_selection == "Module 3":
     from run_fast_tensor import FastTrain
-
     def render_run_fast_interface():
         st.header("Module 3 - Efficient")
         render_train_interface(FastTrain, False)
@@ -104,10 +97,8 @@ if module_selection == "Module 3":
 if module_selection == "Module 4":
     from run_mnist_interface import render_run_image_interface
     from sentiment_interface import render_run_sentiment_interface
-
     PAGES["Module 4: Images"] = render_run_image_interface
     PAGES["Module 4: Sentiment"] = render_run_sentiment_interface
-
 
 PAGE_OPTIONS = list(PAGES.keys())
 

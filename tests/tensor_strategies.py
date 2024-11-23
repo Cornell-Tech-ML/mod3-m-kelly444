@@ -1,5 +1,4 @@
 from typing import List, Optional
-
 from hypothesis import settings
 from hypothesis.strategies import (
     DrawFn,
@@ -10,10 +9,8 @@ from hypothesis.strategies import (
     lists,
     permutations,
 )
-
 import minitorch
 from minitorch import Tensor, TensorBackend, TensorData, UserIndex, UserShape
-
 from .strategies import small_ints
 
 settings.register_profile("ci", deadline=None)
@@ -107,7 +104,6 @@ def matmul_tensors(
     ),
 ) -> List[Tensor]:
     i, j, k = [draw(integers(min_value=1, max_value=10)) for _ in range(3)]
-
     l1 = (i, j)
     l2 = (j, k)
     values = []

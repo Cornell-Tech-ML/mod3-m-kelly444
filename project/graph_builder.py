@@ -10,7 +10,6 @@ else:
     class Scalar:
         name: str
 
-
 def build_expression(code):
     out = eval(
         code,
@@ -23,7 +22,6 @@ def build_expression(code):
     out.name = "out"
     return out
 
-
 def build_tensor_expression(code):
     variables = {
         "x": minitorch.tensor([[1.0, 2.0, 3.0]], requires_grad=True),
@@ -33,11 +31,9 @@ def build_tensor_expression(code):
     variables["x"].name = "x"
     variables["y"].name = "y"
     variables["z"].name = "z"
-
     out = eval(code, variables)
     out.name = "out"
     return out
-
 
 class GraphBuilder:
     def __init__(self):
@@ -60,14 +56,11 @@ class GraphBuilder:
 
     def run(self, final):
         queue = [[final]]
-
         G = nx.MultiDiGraph()
         G.add_node(self.get_name(final))
-
         while queue:
             (cur,) = queue[0]
             queue = queue[1:]
-
             if cur.is_constant() or cur.is_leaf():
                 continue
             else:
