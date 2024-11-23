@@ -85,7 +85,7 @@ class CudaOps(TensorOps):
 
     @staticmethod
     def map(fn: Callable[[float], float]) -> MapProto:
-        """Applies a function to each element of a tensor (array), using GPU for computation if available.
+        """Applies a function to each element of a tensor (array).
 
         Args:
         ----
@@ -128,7 +128,6 @@ class CudaOps(TensorOps):
 @staticmethod
 def zip(fn: Callable[[float, float], float]) -> Callable[[Tensor, Tensor], Tensor]:
     """Takes two tensors and applies a function element-wise to pairs of elements from both tensors.
-    Uses GPU computation if available.
 
     Args:
     ----
@@ -396,7 +395,7 @@ jit_mm_practice = jit(_mm_practice)
 
 
 def mm_practice(a: Tensor, b: Tensor) -> TensorData:
-    """Performs matrix multiplication between two tensors (matrices). Uses GPU if available, or CPU for smaller matrices.
+    """Performs matrix multiplication between two tensors (matrices).
 
     Args:
     ----
